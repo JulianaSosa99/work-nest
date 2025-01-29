@@ -22,7 +22,7 @@ Objetivos del Proyecto**
 
 1. **Frontend (React.js)**
 
-- Interfaz moderna y responsiva para freelancers.
+- Interfaz moderna para freelancers.
 - Manejo de autenticación con JWT.
 - Consumo de APIs mediante Azure API Gateway.
 
