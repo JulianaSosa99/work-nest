@@ -4,7 +4,7 @@
 
 **Tecnologías:** React.js, Spring Boot, MongoDB, PostgreSQL, Azure API Gateway, RabbitMQ
 
-:tw-1f1e9-1f1ea: :smile:**Descripción del Proyecto**
+:smile:**Descripción del Proyecto**:smile:
 Work Nest es una plataforma diseñada para gestionar citas, planificar tareas y estimar costos para freelancers de manera eficiente. La aplicación permite a los usuarios organizar su agenda, llevar un registro de sus proyectos y clientes, y calcular los costos de sus servicios de manera automatizada.
 
 El sistema está compuesto por varios microservicios que se comunican a través de** Azure Api Management**, asegurando una estructura escalable y segura.
