@@ -1,5 +1,5 @@
 **Work Nest - Plataforma de Gestión para Freelancers**
-**Autores:** Priscila Zúñiga, Matias Robayo, Juliana Sosa
+**Autores:** Priscila Zúñiga, Daniela Mora, Juliana Sosa, Nicolas Casamen
 **Fecha:** Enero 2025
 
 **Tecnologías:** React.js, Spring Boot, MongoDB, PostgreSQL, Azure API Gateway, RabbitMQ
