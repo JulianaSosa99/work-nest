@@ -22,7 +22,7 @@ ARG JAR=gestion-citas-0.0.1-SNAPSHOT.jar
 COPY --from=builder /app/target/${JAR} app.jar
 
 # Construcción de vars de entorno (RENDER las sobreescribirá en Dashboard)
-ARG SERVER_PORT=3000
+ARG SERVER_PORT=8080
 ARG DB_URL
 ARG DB_USER_NAME
 ARG DB_PASSWORD
