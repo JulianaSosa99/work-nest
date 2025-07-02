@@ -4,14 +4,11 @@
 FROM maven:3.9.4-eclipse-temurin-17 AS builder
 WORKDIR /app
 
+# 1) Copia pom y código
 COPY pom.xml .
 COPY src ./src
 
- # 1) Copia pom y código fuente
-COPY pom.xml .
-COPY src ./src
-
-# 2) Empaqueta sin tests y sin filtrar recursos
+# 2) Empaqueta sin tests y sin filtrar resources
 RUN mvn package -B -DskipTests -Dmaven.resources.skip=true
 
 ###############
@@ -20,51 +17,41 @@ RUN mvn package -B -DskipTests -Dmaven.resources.skip=true
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-
+# Copiamos el JAR generado
 ARG JAR=gestion-citas-0.0.1-SNAPSHOT.jar
 COPY --from=builder /app/target/${JAR} app.jar
 
-
-# Construcción de vars de entorno (RENDER las sobreescribirá en Dashboard)
-ARG SERVER_PORT
-ARG DB_URL
-ARG DB_USER_NAME
-ARG DB_PASSWORD
-ARG RABBITMQ_HOST
-ARG RABBITMQ_PORT
-ARG RABBITMQ_USER_NAME
-ARG RABBITMQ_PASSWORD
-ARG RABBITMQ_VIRTUAL_HOST
-# Nombre de tu jar (ajústalo si cambias versión/artifactId)
-ARG JAR=gestion-citas-0.0.1-SNAPSHOT.jar
-COPY --from=builder /app/target/${JAR} app.jar
-
-# 1) Declara todos los build-args que luego Render inyectará como vars de entorno
+# --- Declaración de ARGs para Render ---
 ARG SERVER_PORT=3000
 
+# Datasource
 ARG SPRING_DATASOURCE_URL
 ARG SPRING_DATASOURCE_USERNAME
 ARG SPRING_DATASOURCE_PASSWORD
 
+# RabbitMQ estándar de Spring
 ARG SPRING_RABBITMQ_HOST
-ARG SPRING_RABBITMQ_PORT
+ARG SPRING_RABBITMQ_PORT=5672
 ARG SPRING_RABBITMQ_USERNAME
 ARG SPRING_RABBITMQ_PASSWORD
 ARG SPRING_RABBITMQ_VIRTUAL_HOST
 
+# Tus tres vars punteadas:
 ARG RABBITMQ_EXCHANGE
 ARG RABBITMQ_QUEUE
 ARG RABBITMQ_ROUTING_KEY
 
+# Email
 ARG SPRING_MAIL_HOST
-ARG SPRING_MAIL_PORT
+ARG SPRING_MAIL_PORT=587
 ARG SPRING_MAIL_USERNAME
 ARG SPRING_MAIL_PASSWORD
 
+# JWT / Login API
 ARG JWT_SECRET
 ARG LOGIN_API_URL
 
-# 2) Pásalos al entorno de ejecución
+# --- Pasamos a ENV ---
 ENV SERVER_PORT=${SERVER_PORT}
 
 ENV SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
@@ -77,6 +64,7 @@ ENV SPRING_RABBITMQ_USERNAME=${SPRING_RABBITMQ_USERNAME}
 ENV SPRING_RABBITMQ_PASSWORD=${SPRING_RABBITMQ_PASSWORD}
 ENV SPRING_RABBITMQ_VIRTUAL_HOST=${SPRING_RABBITMQ_VIRTUAL_HOST}
 
+# Estas tres son las que tu código lee con @Value("${rabbitmq.exchange.name}") etc.
 ENV RABBITMQ_EXCHANGE=${RABBITMQ_EXCHANGE}
 ENV RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
 ENV RABBITMQ_ROUTING_KEY=${RABBITMQ_ROUTING_KEY}
@@ -89,14 +77,6 @@ ENV SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
 ENV JWT_SECRET=${JWT_SECRET}
 ENV LOGIN_API_URL=${LOGIN_API_URL}
 
-
-# Expone el puerto configurado
-
-
 EXPOSE ${SERVER_PORT}
 
-# 3) Expón el puerto configurable
-EXPOSE ${SERVER_PORT}
-
-# 4) Lanza la aplicación
 ENTRYPOINT ["java","-jar","/app/app.jar"]
