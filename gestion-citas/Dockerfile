@@ -4,17 +4,14 @@
 FROM maven:3.9.4-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-<<<<<<< HEAD
 COPY pom.xml .
 COPY src ./src
 
-=======
-# 1) Copia pom y código fuente
+ # 1) Copia pom y código fuente
 COPY pom.xml .
 COPY src ./src
 
 # 2) Empaqueta sin tests y sin filtrar recursos
->>>>>>> 8f45dba (Dockerfile)
 RUN mvn package -B -DskipTests -Dmaven.resources.skip=true
 
 ###############
@@ -23,7 +20,7 @@ RUN mvn package -B -DskipTests -Dmaven.resources.skip=true
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-<<<<<<< HEAD
+
 ARG JAR=gestion-citas-0.0.1-SNAPSHOT.jar
 COPY --from=builder /app/target/${JAR} app.jar
 
@@ -38,7 +35,6 @@ ARG RABBITMQ_PORT
 ARG RABBITMQ_USER_NAME
 ARG RABBITMQ_PASSWORD
 ARG RABBITMQ_VIRTUAL_HOST
-=======
 # Nombre de tu jar (ajústalo si cambias versión/artifactId)
 ARG JAR=gestion-citas-0.0.1-SNAPSHOT.jar
 COPY --from=builder /app/target/${JAR} app.jar
@@ -56,7 +52,6 @@ ARG SPRING_RABBITMQ_USERNAME
 ARG SPRING_RABBITMQ_PASSWORD
 ARG SPRING_RABBITMQ_VIRTUAL_HOST
 
->>>>>>> 8f45dba (Dockerfile)
 ARG RABBITMQ_EXCHANGE
 ARG RABBITMQ_QUEUE
 ARG RABBITMQ_ROUTING_KEY
@@ -94,13 +89,12 @@ ENV SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
 ENV JWT_SECRET=${JWT_SECRET}
 ENV LOGIN_API_URL=${LOGIN_API_URL}
 
-<<<<<<< HEAD
+
 # Expone el puerto configurado
 
 
 EXPOSE ${SERVER_PORT}
 
-=======
 # 3) Expón el puerto configurable
 EXPOSE ${SERVER_PORT}
 
