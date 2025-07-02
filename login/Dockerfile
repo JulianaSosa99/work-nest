@@ -1,29 +1,48 @@
-# 1) Etapa de build: compila tu .jar usando Maven
-FROM maven:3.9.2-eclipse-temurin-17 AS builder
-
+###############
+# 1) Builder  #
+###############
+FROM maven:3.9.4-eclipse-temurin-17 AS builder
 WORKDIR /app
+
+# Copia el pom y el código
 COPY pom.xml .
-# Descarga dependencias sin compilar aún
-RUN mvn dependency:go-offline -B
-
-# Copia el código y genera el jar
 COPY src ./src
-RUN mvn package -DskipTests -B
 
-# 2) Etapa de runtime: imagen ligera para ejecutar el jar
-FROM eclipse-temurin:17-jdk-alpine
+# Evita el filtering de recursos (se saltará la fase resources)
+RUN mvn package -B -DskipTests -Dmaven.resources.skip=true
 
+###############
+# 2) Runtime  #
+###############
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Puedes definir valores por defecto (opcional)
-ENV SPRING_PROFILES_ACTIVE=default \
-    SERVER_PORT=3000
+#
+# Copiamos el JAR generado
+#
+ARG JAR=login-0.0.1-SNAPSHOT.jar
+COPY --from=builder /app/target/${JAR} app.jar
 
-# Copia el artefacto generado en la etapa anterior
-COPY --from=builder /app/target/login-0.0.1-SNAPSHOT.jar app.jar
+# Ponemos por defecto el puerto 3000, pero se puede sobreescribir
+ENV SERVER_PORT=3000
 
-# Exponemos el puerto (leerá SERVER_PORT)
+# Declara como argumentos de build (para que el linter no marque error)
+ARG SPRING_DATASOURCE_URL
+ARG SPRING_DATASOURCE_USERNAME
+ARG SPRING_DATASOURCE_PASSWORD
+ARG JWT_SECRET
+ARG JWT_EXPIRATION
+ARG SERVER_PORT=3000
+
+# Pásalos a ENV para la aplicación en runtime
+ENV SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+ENV SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+ENV SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+ENV JWT_SECRET=${JWT_SECRET}
+ENV JWT_EXPIRATION=${JWT_EXPIRATION}
+ENV SERVER_PORT=${SERVER_PORT}
+
+# Expone el puerto configurado
 EXPOSE ${SERVER_PORT}
 
-# ENTRYPOINT que arranca tu aplicación
-ENTRYPOINT ["sh","-c","java -jar app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
