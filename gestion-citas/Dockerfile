@@ -4,11 +4,9 @@
 FROM maven:3.9.4-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-# 1) Copia pom y código
 COPY pom.xml .
 COPY src ./src
 
-# 2) Empaqueta sin tests y sin filtrar resources
 RUN mvn package -B -DskipTests -Dmaven.resources.skip=true
 
 ###############
@@ -17,12 +15,12 @@ RUN mvn package -B -DskipTests -Dmaven.resources.skip=true
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Nombre del JAR a copiar (ajústalo si cambias versión/artifactId)
 ARG JAR=gestion-citas-0.0.1-SNAPSHOT.jar
 COPY --from=builder /app/target/${JAR} app.jar
 
+
 # Construcción de vars de entorno (RENDER las sobreescribirá en Dashboard)
-ARG SERVER_PORT=8080
+ARG SERVER_PORT
 ARG DB_URL
 ARG DB_USER_NAME
 ARG DB_PASSWORD
@@ -65,7 +63,8 @@ ENV JWT_SECRET=${JWT_SECRET}
 ENV LOGIN_API_URL=${LOGIN_API_URL}
 
 # Expone el puerto configurado
+
+
 EXPOSE ${SERVER_PORT}
 
-# Lanza la app
 ENTRYPOINT ["java","-jar","/app/app.jar"]
