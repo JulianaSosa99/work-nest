@@ -99,5 +99,4 @@ EXPOSE ${SERVER_PORT}
 EXPOSE ${SERVER_PORT}
 
 # 4) Lanza la aplicación
->>>>>>> 8f45dba (Dockerfile)
 ENTRYPOINT ["java","-jar","/app/app.jar"]
