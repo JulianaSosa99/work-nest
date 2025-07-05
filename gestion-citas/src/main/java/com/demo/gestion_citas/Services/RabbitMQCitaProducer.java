@@ -23,12 +23,6 @@ public class RabbitMQCitaProducer {
     {
         this.rabbitTemplate=rabbitTemplate;
     }
-   /* public void enviarCita(Cita cita)
-    {
-        LOGGER.info("Enviando mensaje de cita a RabbitMQ: {}", cita);
-        rabbitTemplate.convertAndSend(exchange,routingJsonKey,cita);
-    }
-    */
 
     public void enviarCita(Cita cita, String correoFreelancer, String nombreFreelancer, String accion) {
         if (cita.getEmailCliente() == null || correoFreelancer == null || nombreFreelancer == null) {
