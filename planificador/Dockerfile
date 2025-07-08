@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 
 # Exponer el puerto (Render inyecta $PORT)
-EXPOSE 10000
+EXPOSE $PORT
 
 # Arranque usando la variable $PORT que Render provee
 ENTRYPOINT ["sh","-c","java -Dserver.port=$PORT -jar /app/app.jar"]
